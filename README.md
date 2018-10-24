@@ -161,6 +161,9 @@ discord_bot_id = 'YOUR_DISCORD_CLIENT_ID_HERE'
 discord_bot_token = 'YOUR_DISCORD_BOT_TOKEN_HERE'
 wallet = 'YOUR_WALLET_ID_RETURNED_FROM_NODE'
 node_pass = 'YOUR_PASSWORD_TEST_SERVICE'
+
+node_ip='NODE_IP_TESTING'
+node_port=NODE_PORT_TESTING
 ```
 
 Also configure the postgres connection info from before:
