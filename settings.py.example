@@ -5,6 +5,7 @@ discord_bot_id = ''
 discord_bot_token = ''
 # Nano node wallet ID
 wallet = ''
+node_pass = ''
 # Exempt users list (these user IDs will not be able to receive tips
 exempt_users = [ discord_bot_id, '395828286548344834', '405250059240996864', '418425979942207499' ]
 # Restricted roles for certain commands
@@ -28,16 +29,16 @@ command_prefix='!'
 # Status
 playing_status=command_prefix + 'help'
 # Block Explorer URL (sent to users with BLOCK after withdraw)
-block_explorer="https://creeper.banano.cc/explorer/" if banano else "https://nano.meltingice.net/explorer/"
+block_explorer="https://tangram/explorer/"
 # Representative Account Address (shown to users in help menu)
-representative="ban_354zikbhgyufnnc98kp4h5w1jmpd1ngiwjo63e7aoz837wmtx3pjxjczq68x" if banano else "xrb_3o7uzba8b9e1wqu5ziwpruteyrs3scyqr761x7ke6w1xctohxfh5du75qgaj" 
+representative="tgm_vJmzH8eqWr6V8hpsE4kksSLumX3c1y4VxatBSxvzjzqALbxBtTZccT3ytKSPE5MMhqtAekYtwKAWuB2hSLBDPrubiewawS9n2uRGkb" 
 # Postgres
 database='graham'
 database_user='graham_user'
 database_password='password'
 # No need to change these unless you know what you're doing
-node_ip='[::1]'
-node_port=7072 if banano else 7076
+node_ip=''
+node_port=
 # Restrict giveaways to certain roles
 giveaway_role=None
 # Restrict giveaways to certain channels (optional)
