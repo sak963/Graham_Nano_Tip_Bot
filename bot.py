@@ -23,7 +23,7 @@ import settings
 import db
 import paginator
 
-from tasks import app, pocket_task
+from tasks import app
 
 logger = util.get_logger("main")
 
