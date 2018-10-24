@@ -60,9 +60,9 @@ except:
 	pass
 
 # HELP menu header
-AUTHOR_HEADER="Graham v{0} ({1} Edition)".format(BOT_VERSION, "BANANO" if settings.banano else "NANO")
+AUTHOR_HEADER="Graham v{0} ({1} Edition)".format(BOT_VERSION, "TANGRAM")
 
-DONATION_ADDRESS='ban_3jb1fp4diu79wggp7e171jdpxp95auji4moste6gmc55pptwerfjqu48okse' if settings.banano else 'xrb_1hmefcfq35td5f6rkh15hbpr4bkkhyyhmfhm7511jaka811bfp17xhkboyxo'
+DONATION_ADDRESS='tgm_vJmzH8eqWr6V8hpsE4kksSLumX3c1y4VxatBSxvzjzqALbxBtTZccT3ytKSPE5MMhqtAekYtwKAWuB2hSLBDPrubiewawS9n2uRGkb'
 
 # Command DOC (TRIGGER, CMD, Overview, Info)
 '''
@@ -83,8 +83,8 @@ def get_aliases(dict, exclude=''):
 
 ### All commands
 
-TIP_UNIT = "BANANO" if settings.banano else "naneroo"
-TIP_PREFIX = "ban" if settings.banano else "tip"
+TIP_UNIT = "TANGRAM"
+TIP_PREFIX = "tip"
 BALANCE = {
 		"TRIGGER"  : ["balance", "bal", "$"],
 		"CMD"      : "{0}balance".format(COMMAND_PREFIX),
@@ -102,21 +102,28 @@ DEPOSIT ={
 		"CMD"      : "{0}deposit or {0}register or {0}wallet or {0}address".format(COMMAND_PREFIX),
 		"OVERVIEW" : "Shows your account address",
 		"INFO"     : ("Displays your tip bot account address along with a QR code" +
-				"\n- Send NANO to this address to increase your tip bot balance" +
+				"\n- Send TANGRAM to this address to increase your tip bot balance" +
 				"\n- If you do not have a tip bot account yet, this command will create one for you (receiving a tip automatically creates an account too)")
 }
 
-WITHDRAW = {
-		"TRIGGER"  : ["withdraw"],
-		"CMD"      : "{0}withdraw, takes: address (optional amount)".format(COMMAND_PREFIX),
-		"OVERVIEW" : "Allows you to withdraw from your tip account",
-		"INFO"     : ("Withdraws specified amount to specified address, " +
-				"if amount isn't specified your entire tip account balance will be withdrawn" +
-				"\nExample: `{0}withdraw xrb_111111111111111111111111111111111111111111111111111hifc8npp 1000` - Withdraws 1000 {1}").format(COMMAND_PREFIX, TIP_UNIT)
+SEND = {
+		"TRIGGER"  : ["send"],
+		"CMD"      : "{0}send, takes: amount, address".format(COMMAND_PREFIX),
+		"OVERVIEW" : "Allows you to send coins from your tip account to any address",
+		"INFO"     : ("Send specified amount to specified address. Fractional digits be truncated." +
+				"\nExample: `{0}send 1000 tgm_vJmzH8eqWr6V8hpsE4kksSLumX3c1y4VxatBSxvzjzqALbxBtTZccT3ytKSPE5MMhqtAekYtwKAWuB2hSLBDPrubiewawS9n2uRGkb` - Sends 1000 {1}").format(COMMAND_PREFIX, TIP_UNIT)
+}
+
+SENDMAX = {
+		"TRIGGER"  : ["sendmax"],
+		"CMD"      : "{0}sendmax, takes: address".format(COMMAND_PREFIX),
+		"OVERVIEW" : "Allows you to withdraw everything from your tip account",
+		"INFO"     : ("Withdraws complete balance to specified address" +
+				"\nExample: `{0}sendmax tgm_vJmzH8eqWr6V8hpsE4kksSLumX3c1y4VxatBSxvzjzqALbxBtTZccT3ytKSPE5MMhqtAekYtwKAWuB2hSLBDPrubiewawS9n2uRGkb` - Withdraws everything")
 }
 
 TIP = {
-		"TRIGGER"  : ["ban", "b"] if settings.banano else ["tip", "t"],
+		"TRIGGER"  : ["tip", "t"],
 		"CMD"      : "{0}{1}, takes: amount <*users>".format(COMMAND_PREFIX, TIP_PREFIX),
 		"OVERVIEW" : "Send a tip to mentioned users",
 		"INFO"     : ("Tip specified amount to mentioned user(s) (minimum tip is 1 {2})" +
@@ -126,14 +133,14 @@ TIP = {
 }
 
 TIPSPLIT = {
-		"TRIGGER"  : ["bansplit", "bsplit", "bs"] if settings.banano else ["tipsplit", "tsplit"],
+		"TRIGGER"  : ["tipsplit", "tsplit"],
 		"CMD"      : "{0}{1}split, takes: amount, <*users>".format(COMMAND_PREFIX, TIP_PREFIX),
 		"OVERVIEW" : "Split a tip among mentioned uses",
 		"INFO"     : "Distributes a tip evenly to all mentioned users.\nExample: `{0}{1}split 2 @user1 @user2` would send 1 to user1 and 1 to user2".format(COMMAND_PREFIX, TIP_PREFIX)
 }
 
 TIPRANDOM = {
-		"TRIGGER"  : ["banrandom", "br"] if settings.banano else ["tiprandom", "tr"],
+		"TRIGGER"  : ["tiprandom", "tr"],
 		"CMD"      : "{0}{1}random, takes: amount".format(COMMAND_PREFIX, TIP_PREFIX),
 		"OVERVIEW" : "Tips a random active user",
 		"INFO"     : ("Tips amount to a random active user. Active user list picked using same logic as rain" +
@@ -141,8 +148,8 @@ TIPRANDOM = {
 }
 
 RAIN = {
-		"TRIGGER"  : ["brain"] if settings.banano else ["rain"],
-		"CMD"      : "{0}{1}, takes: amount".format(COMMAND_PREFIX, "brain" if settings.banano else "rain"),
+		"TRIGGER"  : ["rain"],
+		"CMD"      : "{0}{1}, takes: amount".format(COMMAND_PREFIX,"rain"),
 		"OVERVIEW" : "Split tip among all active* users",
 		"INFO"     : ("Distribute <amount> evenly to users who are eligible.\n" +
 				"Eligibility is determined based on your *recent* activity **and** contributions to public channels. " +
@@ -175,7 +182,7 @@ ENTER = {
 }
 
 TIPGIVEAWAY = {
-		"TRIGGER"  : ["donate", "d"] if settings.banano else ["tipgiveaway", "tg"],
+		"TRIGGER"  : ["tipgiveaway", "tg"],
 		"CMD"      : "{0}tipgiveaway, takes: amount".format(COMMAND_PREFIX),
 		"OVERVIEW" : "Add to present or future giveaway prize pool",
 		"INFO"     : ("Add <amount> to the current giveaway pool\n"+
@@ -252,7 +259,7 @@ FAVORITES = {
 }
 
 TIP_FAVORITES = {
-		"TRIGGER"  : ["banfavs", "banfavorites", "banfavourties", "bf"] if settings.banano else ["tipfavs", "tipfavorites", "tipfavourites", "tf"],
+		"TRIGGER"  : ["tipfavs", "tipfavorites", "tipfavourites", "tf"],
 		"CMD"      : "{0}{1}favorites, takes: amount".format(COMMAND_PREFIX, TIP_PREFIX),
 		"OVERVIEW" : "Tip your entire favorites list",
 		"INFO"     : ("Tip everybody in your favorites list specified amount" +
@@ -367,7 +374,7 @@ SETTOPTIP = {
 		"CMD"      : "{0}settoptip".format(COMMAND_PREFIX),
 		"INFO"     : ("Allows you to set a users top tips. You can set 1 or all of monthly, 24h, and all-time " +
 				"toptips.\n Example: \n `settoptip @user alltime=2.38 month=1.23 day=0.5` " + 
-				"sets @user's biggest alltime tip to 2.38 NANO, month to 1.23 NANO, and day to 0.5 NANO")
+				"sets @user's biggest alltime tip to 2.38 TANGRAM, month to 1.23 TANGRAM, and day to 0.5 TANGRAM")
 }
 
 INCREASETIPCOUNT = {
@@ -381,7 +388,7 @@ DECREASETIPCOUNT = {
 }
 
 COMMANDS = {
-		"ACCOUNT_COMMANDS"      : [BALANCE, DEPOSIT, WITHDRAW],
+		"ACCOUNT_COMMANDS"      : [BALANCE, DEPOSIT, SEND, SENDMAX],
 		"TIPPING_COMMANDS"      : [TIP, TIPSPLIT, TIPRANDOM, RAIN],
 		"GIVEAWAY_COMMANDS"     : [START_GIVEAWAY, ENTER, TIPGIVEAWAY, TICKETSTATUS],
 		"STATISTICS_COMMANDS"   : [GIVEAWAY_STATS, WINNERS, LEADERBOARD, TOPTIPS,STATS],
@@ -394,16 +401,11 @@ COMMANDS = {
 ### Response Templates###
 
 # balance
-if settings.banano:
-	BALANCE_TEXT=(	"```Actual Balance   : {0:,.2f} BANANO\n" +
-					"Available Balance: {1:,.2f} BANANO\n" +
-					"Pending Send     : {2:,.2f} BANANO\n" +
-					"Pending Receipt  : {3:,.2f} BANANO```")
-else:
-	BALANCE_TEXT=(	"```Actual Balance   : {0} naneroo ({1:.6f} NANO)\n" +
-					"Available Balance: {2} naneroo ({3:.6f} NANO)\n" +
-					"Pending Send     : {4} naneroo ({5:.6f} NANO)\n" +
-					"Pending Receipt  : {6} naneroo ({7:.6f} NANO)```")
+
+BALANCE_TEXT=(	"```Actual Balance   : {0:,.2f} TANGRAM\n" +
+				"Available Balance: {1:,.2f} TANGRAM\n" +
+				"Pending Send     : {2:,.2f} TANGRAM\n" +
+				"Pending Receipt  : {3:,.2f} TANGRAM```")
 
 # deposit (split into 3 for easy copypasting address on mobile)
 DEPOSIT_TEXT="Your wallet address is:"
@@ -415,13 +417,21 @@ INSUFFICIENT_FUNDS_TEXT="You don't have enough {0} in your available balance!".f
 TIP_RECEIVED_TEXT="You were tipped {0} " + TIP_UNIT + " by {1}. You can mute tip notifications from this person using `" + COMMAND_PREFIX + "mute {2}`"
 TIP_SELF="No valid recipients found in your tip.\n(You cannot tip yourself and certain other users are exempt from receiving tips)"
 
-# withdraw
-WITHDRAW_SUCCESS_TEXT="Withdraw has been queued for processing, I'll send you a link to the transaction after I've broadcasted it to the network!"
-WITHDRAW_PROCESSED_TEXT="Withdraw processed:\nTransaction: {0}block/{1}\nIf you have an issue with a withdraw please wait **24 hours** before contacting my master."
-WITHDRAW_NO_BALANCE_TEXT="You have no {0} to withdraw".format(TIP_UNIT)
-WITHDRAW_INVALID_ADDRESS_TEXT="Withdraw address is not valid"
-WITHDRAW_COOLDOWN_TEXT="You need to wait {0:.2f} seconds before making another withdraw"
-WITHDRAW_INSUFFICIENT_BALANCE="Your balance isn't high enough to withdraw that much"
+# send
+SEND_AMBIGUOUS_AMOUNT="More than one amount found. You probably use a wrong number format."
+SEND_AMOUNT_NOT_FOUND="Specify an amount to send."
+
+# sendmax and send
+SEND_INVALID_ADDRESS_TEXT="Address rejected by the node. You probably made a typo or copied an address from a different network."
+SEND_PROCESSED_TEXT="Withdraw processed:\nTransaction: {0}block/{1}\nIf you have an issue with a withdraw please wait **24 hours** before contacting my master."
+SEND_COOLDOWN_TEXT="You need to wait {0:.2f} seconds before making another withdraw"
+SEND_TOO_MANY_ADDRESSES_TEXT="More than one address found. You can only make one transaction at a time."
+SEND_NO_BALANCE_TEXT="You have no {0} remaining on this account".format(TIP_UNIT)
+SEND_SUCCESS_TEXT="Transaction has been queued for processing, I'll send you a link to the block explorer when I've broadcasted it to the network!"
+SEND_ADDRESS_NOT_FOUND_TEXT="No valid address recognized. If you entered an address, make sure you didn't miss any characters."
+
+# legacy/deprecated 
+WITHDRAW_COMMAND_CHANGED="The ~~{0}withdraw~~ command is now divided into `{0}send` and `{0}sendmax`. Use those instead.".format(COMMAND_PREFIX)
 
 # leaderboard
 TOP_HEADER_TEXT="Here are the top {0} tippers :clap:"
@@ -430,10 +440,7 @@ TOP_SPAM="No more big tippers for {0} seconds"
 
 # tipstats (individual)
 STATS_ACCT_NOT_FOUND_TEXT="I could not find an account for you, try private messaging me `{0}register`".format(COMMAND_PREFIX)
-if settings.banano:
-	STATS_TEXT="You are rank #{0}, you've tipped a total of {1:.2f} BANANO, your average tip is {2:.2f} BANANO, and your biggest tip of all time is {3:.2f} BANANO"
-else:
-	STATS_TEXT="You are rank #{0}, you've tipped a total of {1:.6f} NANO, your average tip is {2:.6f} NANO, and your biggest tip of all time is {3:.6f} NANO"
+STATS_TEXT="You are rank #{0}, you've tipped a total of {1:.2f} TANGRAM, your average tip is {2:.2f} TANGRAM, and your biggest tip of all time is {3:.2f} TANGRAM"
 
 # tipsplit
 TIPSPLIT_SMALL="Tip amount is too small to be distributed to that many users"
@@ -442,34 +449,19 @@ TIPSPLIT_SMALL="Tip amount is too small to be distributed to that many users"
 RAIN_NOBODY="I couldn't find anybody eligible to receive rain"
 
 # giveaway (all giveaway related commands)
-if settings.banano:
-	GIVEAWAY_EXISTS="There's already an active giveaway"
-	GIVEAWAY_STARTED="{0} has sponsored a giveaway of {1:.2f} BANANO! Use:\n - `" + COMMAND_PREFIX + "ticket` to enter\n - `" + COMMAND_PREFIX + "donate` to increase the pot\n - `" + COMMAND_PREFIX + "ticketstatus` to check the status of your entry"
-	GIVEAWAY_STARTED_FEE="{0} has sponsored a giveaway of {1:.2f} BANANO, including community contributions the total pot is {2:.2f} BANANO! The entry fee is {3} BANANO.\nUse:\n - `" + COMMAND_PREFIX + "ticket {3}` to buy your ticket\n - `" + COMMAND_PREFIX + "donate` to increase the pot\n - `" + COMMAND_PREFIX + "ticketstatus` to check the status of your entry"
-	GIVEAWAY_FEE_TOO_HIGH="A giveaway has started where the entry fee is higher than your donations! Use `{0}ticketstatus` to see how much you need to enter!".format(COMMAND_PREFIX)
-	GIVEAWAY_MAX_FEE="Giveaway entry fee cannot be more than 5% of the prize pool"
-	GIVEAWAY_ENDED="Congratulations! <@{0}> was the winner of the giveaway! They have been sent {1:.2f} BANANO!"
-	GIVEAWAY_STATS_NF="There are {0} entries to win {1:.2f} BANANO ending in {2} - sponsored by {3}.\nUse:\n - `" + COMMAND_PREFIX + "ticket` to enter\n - `" + COMMAND_PREFIX + "donate` to add to the pot\n - `" + COMMAND_PREFIX + "ticketstatus` to check status of your entry"
-	GIVEAWAY_STATS_FEE="There are {0} entries to win {1:.2f} BANANO ending in {2} - sponsored by {3}.\nEntry fee: {4} BANANO. Use:\n - `" + COMMAND_PREFIX + "ticket {4}` to enter\n - `" + COMMAND_PREFIX + "donate` to add to the pot\n - `" + COMMAND_PREFIX + "ticketstatus` to check the status of your entry"
-	GIVEAWAY_STATS_INACTIVE="There are no active giveaways\n{0} BANANO required to to automatically start one! Use\n - `" + COMMAND_PREFIX + "donate` to donate to the next giveaway.\n - `" + COMMAND_PREFIX + "giveaway` to sponsor your own giveaway\n - `" + COMMAND_PREFIX + "ticketstatus` to see how much you've already donated to the next giveaway"
-	ENTER_ADDED="You've been successfully entered into the giveaway"
-	ENTER_DUP="You've already entered the giveaway"
-	TIPGIVEAWAY_NO_ACTIVE="There are no active giveaways. Check giveaway status using `{0}giveawaystats`, or donate to the next one using `{0}tipgiveaway`".format(COMMAND_PREFIX)
-	TIPGIVEAWAY_ENTERED_FUTURE="With your bantastic donation I have reserved your ticket for the next community sponsored giveaway!"
-else:
-	GIVEAWAY_EXISTS="There's already an active giveaway"
-	GIVEAWAY_STARTED="{0} has sponsored a giveaway of {1:.6f} NANO, including community contributions the total pot is {2:.6f} NANO!\nUse:\n - `" + COMMAND_PREFIX + "ticket` to enter\n - `" + COMMAND_PREFIX + "tipgiveaway` to increase the pot\n - `" + COMMAND_PREFIX + "ticketstatus` to check the status of your entry"
-	GIVEAWAY_STARTED_FEE="{0} has sponsored a giveaway of {1:.6f} NANO, including community contributions the total pot is {2:.6f} NANO! The entry fee is {3} naneroo.\nUse:\n - `" + COMMAND_PREFIX + "ticket {3}` to buy your ticket\n - `" + COMMAND_PREFIX + "tipgiveaway` to increase the pot\n - `" + COMMAND_PREFIX + "ticketstatus` to check the status of your entry"
-	GIVEAWAY_FEE_TOO_HIGH="A giveaway has started where the entry fee is higher than your donations! Use `{0}ticketstatus` to see how much you need to enter!".format(COMMAND_PREFIX)
-	GIVEAWAY_MAX_FEE="Giveaway entry fee cannot be more than 5% of the prize pool"
-	GIVEAWAY_ENDED="Congratulations! <@{0}> was the winner of the giveaway! They have been sent {1:.6f} NANO!"
-	GIVEAWAY_STATS_NF="There are {0} entries to win {1:.6f} NANO ending in {2} - sponsored by {3}.\nUse:\n - `" + COMMAND_PREFIX + "ticket` to enter\n - `" + COMMAND_PREFIX + "tipgiveaway` to add to the pot\n - `" + COMMAND_PREFIX + "ticketstatus` to check status of your entry"
-	GIVEAWAY_STATS_FEE="There are {0} entries to win {1:.6f} NANO ending in {2} - sponsored by {3}.\nEntry fee: {4} naneroo. Use:\n - `" + COMMAND_PREFIX + "ticket {4}` to enter\n - `" + COMMAND_PREFIX + "tipgiveaway` to add to the pot\n - `" + COMMAND_PREFIX + "ticketstatus` to check the status of your entry"
-	GIVEAWAY_STATS_INACTIVE="There are no active giveaways\n{0} naneroo required to to automatically start one! Use\n - `" + COMMAND_PREFIX + "tipgiveaway` to donate to the next giveaway.\n - `" + COMMAND_PREFIX + "givearai` to sponsor your own giveaway\n - `" + COMMAND_PREFIX + "ticketstatus` to see how much you've already donated to the next giveaway"
-	ENTER_ADDED="You've been successfully entered into the giveaway"
-	ENTER_DUP="You've already entered the giveaway"
-	TIPGIVEAWAY_NO_ACTIVE="There are no active giveaways. Check giveaway status using `{0}giveawaystats`, or donate to the next one using `{0}tipgiveaway`".format(COMMAND_PREFIX)
-	TIPGIVEAWAY_ENTERED_FUTURE="With your gorgeous donation I have reserved your ticket for the next community sponsored giveaway!"
+GIVEAWAY_EXISTS="There's already an active giveaway"
+GIVEAWAY_STARTED="{0} has sponsored a giveaway of {1:.2f} TANGRAM! Use:\n - `" + COMMAND_PREFIX + "ticket` to enter\n - `" + COMMAND_PREFIX + "donate` to increase the pot\n - `" + COMMAND_PREFIX + "ticketstatus` to check the status of your entry"
+GIVEAWAY_STARTED_FEE="{0} has sponsored a giveaway of {1:.2f} TANGRAM, including community contributions the total pot is {2:.2f} TANGRAM! The entry fee is {3} TANGRAM.\nUse:\n - `" + COMMAND_PREFIX + "ticket {3}` to buy your ticket\n - `" + COMMAND_PREFIX + "donate` to increase the pot\n - `" + COMMAND_PREFIX + "ticketstatus` to check the status of your entry"
+GIVEAWAY_FEE_TOO_HIGH="A giveaway has started where the entry fee is higher than your donations! Use `{0}ticketstatus` to see how much you need to enter!".format(COMMAND_PREFIX)
+GIVEAWAY_MAX_FEE="Giveaway entry fee cannot be more than 5% of the prize pool"
+GIVEAWAY_ENDED="Congratulations! <@{0}> was the winner of the giveaway! They have been sent {1:.2f} TANGRAM!"
+GIVEAWAY_STATS_NF="There are {0} entries to win {1:.2f} TANGRAM ending in {2} - sponsored by {3}.\nUse:\n - `" + COMMAND_PREFIX + "ticket` to enter\n - `" + COMMAND_PREFIX + "donate` to add to the pot\n - `" + COMMAND_PREFIX + "ticketstatus` to check status of your entry"
+GIVEAWAY_STATS_FEE="There are {0} entries to win {1:.2f} TANGRAM ending in {2} - sponsored by {3}.\nEntry fee: {4} TANGRAM. Use:\n - `" + COMMAND_PREFIX + "ticket {4}` to enter\n - `" + COMMAND_PREFIX + "donate` to add to the pot\n - `" + COMMAND_PREFIX + "ticketstatus` to check the status of your entry"
+GIVEAWAY_STATS_INACTIVE="There are no active giveaways\n{0} TANGRAM required to to automatically start one! Use\n - `" + COMMAND_PREFIX + "donate` to donate to the next giveaway.\n - `" + COMMAND_PREFIX + "giveaway` to sponsor your own giveaway\n - `" + COMMAND_PREFIX + "ticketstatus` to see how much you've already donated to the next giveaway"
+ENTER_ADDED="You've been successfully entered into the giveaway"
+ENTER_DUP="You've already entered the giveaway"
+TIPGIVEAWAY_NO_ACTIVE="There are no active giveaways. Check giveaway status using `{0}giveawaystats`, or donate to the next one using `{0}tipgiveaway`".format(COMMAND_PREFIX)
+TIPGIVEAWAY_ENTERED_FUTURE="With your bantastic donation I have reserved your ticket for the next community sponsored giveaway!"
 
 # toptips
 TOPTIP_SPAM="No more top tips for {0} seconds"
@@ -571,7 +563,7 @@ async def mark_tx_processed(source_address, block, uid, to_address, amount):
 
 @client.event
 async def on_ready():
-	logger.info("Graham v%s started.", BOT_VERSION)
+	logger.info("Graham Tangram v%s started.", BOT_VERSION)
 	logger.info("Discord.py API version %s", discord.__version__)
 	logger.info("Name: %s", client.user.name)
 	logger.info("ID: %s", client.user.id)
@@ -581,14 +573,14 @@ async def on_ready():
 	asyncio.get_event_loop().create_task(start_giveaway_timer())
 	logger.info("Starting TX processor")
 	asyncio.get_event_loop().create_task(process_finished_tx())
-	logger.info("Starting receive trigger job")
-	asyncio.get_event_loop().create_task(pocket_pending_tx())
+	#logger.info("Starting receive trigger job")
+	#asyncio.get_event_loop().create_task(pocket_pending_tx())
 
 async def notify_of_withdraw(user_id, txid):
 	"""Notify user of withdraw with a block explorer link"""
 	if user_id is not None:
 		user = await client.get_user_info(int(user_id))
-		await post_dm(user, WITHDRAW_PROCESSED_TEXT, settings.block_explorer, txid)
+		await post_dm(user, SEND_PROCESSED_TEXT, settings.block_explorer, txid)
 
 def is_private(channel):
 	"""Check if a discord channel is private"""
@@ -703,10 +695,8 @@ def build_help():
 	description=("**Reviews**:\n" + "'10/10 True Masterpiece' - That one guy" +
 			"\n'0/10 Didn't get rain' - Almost everybody else\n\n" +
 			"This bot is completely free to use and open source." +
-			" Developed by bbedward (reddit: /u/bbedward, discord: bbedward#9246)" +
+			" Developed by bbedward (reddit: /u/bbedward, discord: bbedward#9246)\n"+
 			"\nFeel free to send tips, suggestions, and feedback.\n\n" +
-			"Consider using this node as a representative to help decentralize the network!\n" +
-			"Representative Address: {0}\n\n"
 			"github: https://github.com/bbedward/Graham_Nano_Tip_Bot").format(settings.representative)
 	pages.append(paginator.Page(entries=entries, author=author,description=description))
 	return pages
@@ -754,23 +744,8 @@ async def balance(ctx):
 		available = balances['available']
 		send = balances['pending_send']
 		receive = balances['pending']
-		if settings.banano:
-			await post_response(message, BALANCE_TEXT, actual, available, send, receive)
-		else:
-			# NANO-version uses micro units so we show the NANO-equivalent for convenience
-			receivenano = receive / 1000000
-			actualnano = actual / 1000000
-			availablenano = available / 1000000
-			sendnano = send / 1000000
-			receivenano = receive / 1000000
-			await post_response(message, BALANCE_TEXT,	"{:,}".format(actual),
-									actualnano,
-									"{:,}".format(available),
-									availablenano,
-									"{:,}".format(send),
-									sendnano,
-									"{:,}".format(receive),
-									receivenano)
+		await post_response(message, BALANCE_TEXT, actual, available, send, receive)
+
 
 @client.command(aliases=get_aliases(DEPOSIT, exclude='deposit'))
 async def deposit(ctx):
@@ -783,7 +758,7 @@ async def deposit(ctx):
 		await post_response(message, DEPOSIT_TEXT_3, get_qr_url(user_deposit_address))
 
 @client.command()
-async def withdraw(ctx):
+async def send(ctx):
 	message = ctx.message
 	if paused:
 		await pause_msg(message)
@@ -792,11 +767,16 @@ async def withdraw(ctx):
 		await post_dm(message.author, FROZEN_MSG)
 	elif is_private(message.channel):
 		try:
-			withdraw_amount = find_amount(message.content)
+			withdraw_amount = find_send_amounts(remove_address(message.content))
 		except util.TipBotException as e:
-			withdraw_amount = 0
+			if e.error_type == "amount_not_found":
+				await post_response(message, SEND_AMOUNT_NOT_FOUND)
+				return
+			elif e.error_type == "amount_ambiguous":
+				await post_response(message, SEND_AMBIGUOUS_AMOUNT)
+				return
 		try:
-			withdraw_address = find_address(message.content)
+			withdraw_address = return_address_match(message.content)
 			user = db.get_user_by_id(message.author.id, user_name=message.author.name)
 			if user is None:
 				return
@@ -806,32 +786,85 @@ async def withdraw(ctx):
 			source_id = user.user_id
 			source_address = user.wallet_address
 			balance = await wallet.get_balance(user)
-			amount = balance['available']
-			if withdraw_amount == 0:
-				withdraw_amount = amount
-			elif 1 > withdraw_amount:
+			available_balance = balance['available']
+			if 1 > withdraw_amount:
 				await post_response(message, "Minimum withdraw is 1 {0}", TIP_UNIT)
 				return
 			else:
 				withdraw_amount = abs(withdraw_amount)
-			if amount == 0:
-				await post_response(message, WITHDRAW_NO_BALANCE_TEXT)
-			elif withdraw_amount > amount:
-				await post_response(message, WITHDRAW_INSUFFICIENT_BALANCE)
+			if available_balance == 0:
+				await post_response(message, SEND_NO_BALANCE_TEXT)
+			elif withdraw_amount > available_balance:
+				await post_response(message, INSUFFICIENT_FUNDS_TEXT)
 			else:
 				uid = str(uuid.uuid4())
 				await wallet.make_transaction_to_address(user, withdraw_amount, withdraw_address, uid,verify_address = True)
-				await post_response(message, WITHDRAW_SUCCESS_TEXT)
+				await post_response(message, SEND_SUCCESS_TEXT)
 				db.update_last_withdraw(user.user_id)
 		except util.TipBotException as e:
 			if e.error_type == "address_not_found":
-				await post_usage(message, WITHDRAW)
+				await post_response(message, SEND_ADDRESS_NOT_FOUND_TEXT)
+				await post_usage(message, SEND)
+			elif e.error_type == "too_many_addresses":
+				await post_response(message, SEND_TOO_MANY_ADDRESSES_TEXT)
 			elif e.error_type == "invalid_address":
-				await post_response(message, WITHDRAW_INVALID_ADDRESS_TEXT)
+				await post_response(message, SEND_INVALID_ADDRESS_TEXT)
 			elif e.error_type == "balance_error":
 				await post_response(message, INSUFFICIENT_FUNDS_TEXT)
 			elif e.error_type == "cooldown_error":
-				await post_response(message, WITHDRAW_COOLDOWN_TEXT, (WITHDRAW_COOLDOWN - last_withdraw_delta))
+				await post_response(message, SEND_COOLDOWN_TEXT, (WITHDRAW_COOLDOWN - last_withdraw_delta))
+
+@client.command()
+async def sendmax(ctx):
+	message = ctx.message
+	if paused:
+		await pause_msg(message)
+		return
+	elif db.is_frozen(message.author.id):
+		await post_dm(message.author, FROZEN_MSG)
+	elif is_private(message.channel):
+		try:
+			withdraw_address = return_address_match(message.content)
+			user = db.get_user_by_id(message.author.id, user_name=message.author.name)
+			if user is None:
+				return
+			last_withdraw_delta = db.get_last_withdraw_delta(user.user_id)
+			if WITHDRAW_COOLDOWN > last_withdraw_delta:
+				raise util.TipBotException("cooldown_error")
+			source_id = user.user_id
+			source_address = user.wallet_address
+			balance = await wallet.get_balance(user)
+			withdraw_amount = balance['available']
+			if withdraw_amount == 0:
+				await post_response(message, SEND_NO_BALANCE_TEXT)
+			elif 1 > withdraw_amount:
+				await post_response(message, "Minimum withdraw is 1 {0}", TIP_UNIT)
+				return
+			else:
+				withdraw_amount = int(withdraw_amount)
+				uid = str(uuid.uuid4())
+				await wallet.make_transaction_to_address(user, withdraw_amount, withdraw_address, uid,verify_address = True)
+				await post_response(message, SEND_SUCCESS_TEXT)
+				db.update_last_withdraw(user.user_id)
+		except util.TipBotException as e:
+			if e.error_type == "address_not_found":
+				await post_response(message, SEND_ADDRESS_NOT_FOUND_TEXT)
+				await post_usage(message, SENDMAX)
+			elif e.error_type == "too_many_addresses":
+				await post_response(message, SEND_TOO_MANY_ADDRESSES_TEXT)
+			elif e.error_type == "invalid_address":
+				await post_response(message, SEND_INVALID_ADDRESS_TEXT)
+			elif e.error_type == "balance_error":
+				await post_response(message, INSUFFICIENT_FUNDS_TEXT)
+			elif e.error_type == "cooldown_error":
+				await post_response(message, SEND_COOLDOWN_TEXT, (WITHDRAW_COOLDOWN - last_withdraw_delta))
+
+@client.command()
+async def withdraw(ctx):
+	message = ctx.message
+	await post_response(message, WITHDRAW_COMMAND_CHANGED)
+	await post_response(message, SEND)
+	await post_response(message, SENDMAX)
 
 @client.command(aliases=get_aliases(TIP,exclude='tip'))
 async def tip(ctx):
@@ -1214,8 +1247,8 @@ async def givearai(ctx):
 			await post_dm(message.author, INSUFFICIENT_FUNDS_TEXT)
 			return
 		end_time = datetime.datetime.utcnow() + datetime.timedelta(minutes=duration)
-		nano_amt = amount if settings.banano else amount / 1000000
-		tipped_amount = db.get_tipgiveaway_sum() if settings.banano else db.get_tipgiveaway_sum() / 1000000
+		nano_amt = amount
+		tipped_amount = db.get_tipgiveaway_sum()
 		giveaway,deleted = db.start_giveaway(message.author.id, message.author.name, nano_amt, end_time, message.channel.id, entry_fee=fee)
 		uid = str(uuid.uuid4())
 		await wallet.make_transaction_to_address(user, amount, None, uid, giveaway_id=giveaway.id)
@@ -1263,7 +1296,7 @@ async def tip_giveaway(message, ticket=False):
 			await add_x_reaction(message)
 			await post_dm(message.author, INSUFFICIENT_FUNDS_TEXT)
 			return
-		nano_amt = amount if settings.banano else amount / 1000000
+		nano_amt = amount
 		if giveaway is not None:
 			giveawayid = giveaway.id
 			fee = giveaway.entry_fee
@@ -1305,7 +1338,7 @@ async def tip_giveaway(message, ticket=False):
 		# If tip sum is >= GIVEAWAY MINIMUM then start giveaway
 		if giveaway is None:
 			tipgiveaway_sum = db.get_tipgiveaway_sum()
-			nano_amt = tipgiveaway_sum if settings.banano else float(tipgiveaway_sum)/ 1000000
+			nano_amt = tipgiveaway_sum
 			if tipgiveaway_sum >= GIVEAWAY_MINIMUM:
 				end_time = datetime.datetime.utcnow() + datetime.timedelta(minutes=GIVEAWAY_AUTO_DURATION)
 				db.start_giveaway(client.user.id, client.user.name, 0, end_time, message.channel.id,entry_fee=fee)
@@ -1433,10 +1466,7 @@ async def winners(ctx):
 			padding = " " * ((max_l - len(winner_nm)) + 1)
 			response += winner_nm
 			response += padding
-			if settings.banano:
-				response += 'won {0:.2f} BANANO'.format(winner['amount'])
-			else:
-				response += 'won {0:.6f} NANO'.format(winner['amount'])
+			response += 'won {0:.2f} TANGRAM'.format(winner['amount'])
 			response += '\n'
 		response += "```"
 		await post_response(message, response)
@@ -1479,7 +1509,7 @@ async def leaderboard(ctx):
 			padding = " " * ((max_l - len(top_user_nm)) + 1)
 			response += top_user_nm
 			response += padding
-			response += '- {0:.2f} BANANO'.format(top_user['amount']) if settings.banano else '- {0:.6f} NANO'.format(top_user['amount'])
+			response += '- {0:.2f} TANGRAM'.format(top_user['amount'])
 			response += '\n'
 		response += "```"
 		await post_response(message, response)
@@ -1694,8 +1724,8 @@ async def blocks(ctx):
 			await post_response(message, "No more blocks for {0} seconds", (SPAM_THRESHOLD - tdelta.seconds))
 			return
 		last_blocks[message.channel.id] = datetime.datetime.utcnow()
-	count, unchecked = await wallet.get_blocks()
-	await post_response(message, "```Count: {0:,}\nUnchecked: {1:,}```", int(count), int(unchecked))
+	count = await wallet.get_blocks()
+	await post_response(message, "```Count: {0:,}```", int(count))
 
 @client.command()
 async def banned(ctx):
@@ -1941,14 +1971,33 @@ async def settoptip(ctx):
 def get_qr_url(text):
 	return 'https://chart.googleapis.com/chart?cht=qr&chl={0}&chs=180x180&choe=UTF-8&chld=L|2'.format(text)
 
-def find_address(input_text):
-	address = input_text.split(' ')
-	if len(address) == 1:
+def return_address_match(input_text):
+	#pulowi validar con el white paper
+	address_regex = '(?:tgm)(?:_)(?:vJm)(?:[123456789abcdefghijkmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ]{99})'
+	matches = re.findall(address_regex, input_text)
+	if len(matches) == 1:
+		return matches[0]
+	elif len(matches) > 1:
+		raise util.TipBotException("too_many_addresses")
+	else:
 		raise util.TipBotException("address_not_found")
-	elif address[1] is None:
-		raise util.TipBotException("address_not_found")
-	return address[1]
 
+def remove_address(input_text):
+	address_regex = '(?:xrb|nano|ban)(?:_)(?:1|3)(?:[13456789abcdefghijkmnopqrstuwxyz]{59})'
+	return re.sub(address_regex, '', input_text)
+
+# find amount in outbound sends
+def find_send_amounts(input_text):
+	regex = r'(?:^|\s)(\d*\.?\d+)(?=$|\s)'
+	matches = re.findall(regex, input_text, re.IGNORECASE)
+	if len(matches) > 1:
+		raise util.TipBotException("amount_ambiguous")
+	elif len(matches) == 1:
+		return float(matches[0].strip())
+	else:
+		raise util.TipBotException("amount_not_found")
+
+# find amount in regular tips
 def find_amount(input_text):
 	str_split = input_text.split('<@')
 	if (len(str_split) == 0):
@@ -2003,53 +2052,9 @@ async def add_x_reaction(message):
 	return
 
 async def react_to_message(message, amount):
-	if settings.banano:
-		if amount > 0:
-			await message.add_reaction('\:tip:425878628119871488') # TIP mark
-			await message.add_reaction('\:tick:425880814266351626') # check mark
-		if amount > 0 and amount < 50:
-			await message.add_reaction('\U0001F987') # S
-		elif amount >= 50 and amount < 250:
-			await message.add_reaction('\U0001F412') # C
-		elif amount >= 250:
-			await message.add_reaction('\U0001F98D') # W
-	else:
-		if amount > 0:
-			await message.add_reaction('\U00002611') # check mark
-		if amount > 0 and amount < 1000:
-			await message.add_reaction('\U0001F1F8') # S
-			await message.add_reaction('\U0001F1ED') # H
-			await message.add_reaction('\U0001F1F7') # R
-			await message.add_reaction('\U0001F1EE') # I
-			await message.add_reaction('\U0001F1F2') # M
-			await message.add_reaction('\U0001F1F5') # P
-		elif amount >= 1000 and amount < 10000:
-			await message.add_reaction('\U0001F1E8') # C
-			await message.add_reaction('\U0001F1F7') # R
-			await message.add_reaction('\U0001F1E6') # A
-			await message.add_reaction('\U0001F1E7') # B
-		elif amount >= 10000 and amount < 100000:
-			await message.add_reaction('\U0001F1FC') # W
-			await message.add_reaction('\U0001F1E6') # A
-			await message.add_reaction('\U0001F1F1') # L
-			await message.add_reaction('\U0001F1F7') # R
-			await message.add_reaction('\U0001F1FA') # U
-			await message.add_reaction('\U0001F1F8') # S
-		elif amount >= 100000 and amount < 1000000:
-			await message.add_reaction('\U0001F1F8') # S
-			await message.add_reaction('\U0001F1ED') # H
-			await message.add_reaction('\U0001F1E6') # A
-			await message.add_reaction('\U0001F1F7') # R
-			await message.add_reaction('\U0001F1F0') # K
-		elif amount >= 1000000:
-			await message.add_reaction('\U0001F1F2') # M
-			await message.add_reaction('\U0001F1EA') # E
-			await message.add_reaction('\U0001F1EC') # G
-			await message.add_reaction('\U0001F1E6') # A
-			await message.add_reaction('\U0001F1F1') # L
-			await message.add_reaction('\U0001F1E9') # D
-			await message.add_reaction('\U0001F1F4') # O
-			await message.add_reaction('\U0001F1F3') # N
+	await message.add_reaction('\:tip:501992623225962506') # TIP mark
+	await message.add_reaction('\:tick:499996370162417664') # check mark
+
 
 # Start the bot
 client.run(settings.discord_bot_token)
