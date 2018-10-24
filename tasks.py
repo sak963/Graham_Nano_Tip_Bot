@@ -7,6 +7,9 @@ import json
 import settings
 import pycurl
 import util
+import aiohttp
+import asyncio
+
 
 # TODO (besides test obvi)
 # - receive logic
@@ -17,20 +20,13 @@ r = redis.StrictRedis()
 app = Celery('graham', broker='redis://localhost:6379/0', backend='redis://localhost:6379/0')
 app.conf.CELERY_MAX_CACHED_RESULTS = -1
 
-def communicate_wallet(wallet_command):
-	buffer = BytesIO()
-	c = pycurl.Curl()
-	c.setopt(c.URL, settings.node_ip)
-	c.setopt(c.PORT, settings.node_port)
-	c.setopt(c.POSTFIELDS, json.dumps(wallet_command))
-	c.setopt(c.WRITEFUNCTION, buffer.write)
-	c.setopt(c.TIMEOUT, 300)
-	c.perform()
-	c.close()
-
-	body = buffer.getvalue()
-	parsed_json = json.loads(body.decode('iso-8859-1'))
-	return parsed_json
+async def communicate_wallet_async(wallet_command,action):
+	headers = {"accept": "application/json",
+			   "Authorization": settings.node_pass,
+			   "Content-Type": "application/json"}
+	async with aiohttp.ClientSession() as session:
+		async with session.post("http://{0}:{1}/{2}".format(settings.node_ip, settings.node_port,action),json=wallet_command,headers=headers, timeout=300) as resp:
+			return await resp.read()
 
 @app.task(bind=True, max_retries=10)
 def send_transaction(self, tx):
@@ -45,24 +41,35 @@ def send_transaction(self, tx):
 			to_address = tx['to_address']
 			amount = tx['amount']
 			uid = tx['uid']
-			raw_withdraw_amt = int(amount) * util.RAW_PER_BAN if settings.banano else int(amount) * util.RAW_PER_RAI
+			raw_withdraw_amt = int(amount)
+
 			wallet_command = {
-				'action': 'send',
-				'wallet': settings.wallet,
-				'source': source_address,
-				'destination': to_address,
-				'amount': raw_withdraw_amt,
-				'id': uid
+				'identifier': settings.wallet,
+				'password': settings.node_pass,
+				'account': source_address,
+				'change': source_address,
+				'link': to_address,
+				'amount': amount
 			}
 			logger.debug("RPC Send")
-			wallet_output = communicate_wallet(wallet_command)
+			action = "actor/wallet/transfer/funds"
+			loop = asyncio.new_event_loop()
+			asyncio.set_event_loop(loop)
+			outputText = loop.run_until_complete(communicate_wallet_async(wallet_command,action))
+			wallet_output = json.loads(outputText)
 			logger.debug("RPC Response")
 			txid = None
-			if 'block' in wallet_output:
-				txid = wallet_output['block']
+			#pulowi validacion por error 409
+			if source_address == to_address:
+				ret = json.dumps({"success": {"source":source_address, "txid":txid, "uid":uid, "destination":to_address, "amount":amount}})
+				r.rpush('/tx_completed', ret)
+				return ret
+			#pulowi block se cambio por work por el momento
+			if 'work' in wallet_output:
+				txid = wallet_output['work']
 				# Also pocket these timely
 				logger.info("Pocketing tip for %s, block %s", to_address, txid)
-				pocket_tx(to_address, txid)
+				#pocket_tx(to_address, txid)
 			elif 'error' in wallet_output:
 				txid = 'invalid'
 			if txid is not None:
@@ -79,54 +86,6 @@ def send_transaction(self, tx):
 			logger.exception(e)
 			self.retry(countdown=2**self.request.retries)
 			return {"status":"retrying"}
-
-def pocket_tx(account, block):
-	action = {
-		"action":"receive",
-		"wallet":settings.wallet,
-		"account":account,
-		"block":block
-	}
-	return communicate_wallet(action)
-
-@app.task
-def pocket_task(accounts):
-	"""Poll pending transactions in accounts and pocket them"""
-	processed_count = 0
-	# The lock ensures we don't enter this function twice
-	# It wouldn't hurt anything, but there's really no point to do so
-	have_lock = False
-	lock = redis.Redis().lock("POCKET_TASK", timeout=300)
-	try:
-		have_lock = lock.acquire(blocking=False)
-		if not have_lock:
-			logger.info("Could not acquire lock for POCKET_TASK")
-			return None
-		accts_pending_action = {
-			"action":"accounts_pending",
-			"accounts":accounts,
-			"threshold":util.RAW_PER_BAN if settings.banano else util.RAW_PER_RAI,
-			"count":5
-		}
-		resp = communicate_wallet(accts_pending_action)
-		if resp is None or 'blocks' not in resp:
-			return None
-		for account, blocks in resp['blocks'].items():
-			for b in blocks:
-				logger.info("Receiving block %s for account %s", b, account)
-				rcv_resp = pocket_tx(account, b)
-				if rcv_resp is None or 'block' not in rcv_resp:
-					logger.info("Couldn't receive %s - response: %s", b, str(rcv_resp))
-				else:
-					processed_count += 1
-					logger.info("pocketed block %s", b)
-		return processed_count
-	except Exception as e:
-		logger.exception(e)
-		return None
-	finally:
-		if have_lock:
-			lock.release()
 
 if __name__ == '__main__':
 	app.start()
