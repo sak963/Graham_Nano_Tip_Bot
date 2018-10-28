@@ -22,6 +22,7 @@ giveaway_minimum = 1000000
 giveaway_max_duration=60
 # Default giveaway duration for giveaways started by bot
 giveaway_auto_duration=30
+giveaway_percentage = 0.01
 # Set channels here you do not want to allow spam in comma-separated (IE commands like `giveaawaystats`
 no_spam_channels=[403628311965597697]
 # command prefix
