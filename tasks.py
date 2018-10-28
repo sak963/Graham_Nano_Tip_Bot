@@ -17,7 +17,7 @@ import asyncio
 logger = get_task_logger(__name__)
 
 r = redis.StrictRedis()
-app = Celery('graham', broker='redis://localhost:6379/0', backend='redis://localhost:6379/0')
+app = Celery('grahamTangram', broker='redis://localhost:6379/0', backend='redis://localhost:6379/0')
 app.conf.CELERY_MAX_CACHED_RESULTS = -1
 
 async def communicate_wallet_async(wallet_command,action):
@@ -69,7 +69,7 @@ def send_transaction(self, tx):
 				txid = wallet_output['work']
 				# Also pocket these timely
 				logger.info("Pocketing tip for %s, block %s", to_address, txid)
-				#pocket_tx(to_address, txid)
+			#pocket_tx(to_address, txid)
 			elif 'error' in wallet_output:
 				txid = 'invalid'
 			if txid is not None:
@@ -84,6 +84,7 @@ def send_transaction(self, tx):
 			return {"status":"retrying"}
 		except Exception as e:
 			logger.exception(e)
+			logger.debug(wallet_output)
 			self.retry(countdown=2**self.request.retries)
 			return {"status":"retrying"}
 
