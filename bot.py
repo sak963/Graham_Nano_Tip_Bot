@@ -52,7 +52,7 @@ RAIN_COOLDOWN=300
 # Change command prefix to whatever you want to begin commands with
 COMMAND_PREFIX=settings.command_prefix
 # Pool giveaway auto amount (1%)
-TIPGIVEAWAY_AUTO_ENTRY=int(.01 * GIVEAWAY_MINIMUM)
+TIPGIVEAWAY_AUTO_ENTRY=int(settings.giveaway_percentage * GIVEAWAY_MINIMUM)
 GIVEAWAY_CHANNELS=None
 try:
 	GIVEAWAY_CHANNELS=settings.giveaway_channels
@@ -450,14 +450,14 @@ RAIN_NOBODY="I couldn't find anybody eligible to receive rain"
 
 # giveaway (all giveaway related commands)
 GIVEAWAY_EXISTS="There's already an active giveaway"
-GIVEAWAY_STARTED="{0} has sponsored a giveaway of {1:.2f} TANGRAM! Use:\n - `" + COMMAND_PREFIX + "ticket` to enter\n - `" + COMMAND_PREFIX + "donate` to increase the pot\n - `" + COMMAND_PREFIX + "ticketstatus` to check the status of your entry"
-GIVEAWAY_STARTED_FEE="{0} has sponsored a giveaway of {1:.2f} TANGRAM, including community contributions the total pot is {2:.2f} TANGRAM! The entry fee is {3} TANGRAM.\nUse:\n - `" + COMMAND_PREFIX + "ticket {3}` to buy your ticket\n - `" + COMMAND_PREFIX + "donate` to increase the pot\n - `" + COMMAND_PREFIX + "ticketstatus` to check the status of your entry"
+GIVEAWAY_STARTED="{0} has sponsored a giveaway of {1:.2f} TANGRAM! Use:\n - `" + COMMAND_PREFIX + "ticket` to enter\n - `" + COMMAND_PREFIX + "tipgiveaway` to increase the pot\n - `" + COMMAND_PREFIX + "ticketstatus` to check the status of your entry"
+GIVEAWAY_STARTED_FEE="{0} has sponsored a giveaway of {1:.2f} TANGRAM, including community contributions the total pot is {2:.2f} TANGRAM! The entry fee is {3} TANGRAM.\nUse:\n - `" + COMMAND_PREFIX + "ticket {3}` to buy your ticket\n - `" + COMMAND_PREFIX + "tipgiveaway` to increase the pot\n - `" + COMMAND_PREFIX + "ticketstatus` to check the status of your entry"
 GIVEAWAY_FEE_TOO_HIGH="A giveaway has started where the entry fee is higher than your donations! Use `{0}ticketstatus` to see how much you need to enter!".format(COMMAND_PREFIX)
 GIVEAWAY_MAX_FEE="Giveaway entry fee cannot be more than 5% of the prize pool"
 GIVEAWAY_ENDED="Congratulations! <@{0}> was the winner of the giveaway! They have been sent {1:.2f} TANGRAM!"
-GIVEAWAY_STATS_NF="There are {0} entries to win {1:.2f} TANGRAM ending in {2} - sponsored by {3}.\nUse:\n - `" + COMMAND_PREFIX + "ticket` to enter\n - `" + COMMAND_PREFIX + "donate` to add to the pot\n - `" + COMMAND_PREFIX + "ticketstatus` to check status of your entry"
-GIVEAWAY_STATS_FEE="There are {0} entries to win {1:.2f} TANGRAM ending in {2} - sponsored by {3}.\nEntry fee: {4} TANGRAM. Use:\n - `" + COMMAND_PREFIX + "ticket {4}` to enter\n - `" + COMMAND_PREFIX + "donate` to add to the pot\n - `" + COMMAND_PREFIX + "ticketstatus` to check the status of your entry"
-GIVEAWAY_STATS_INACTIVE="There are no active giveaways\n{0} TANGRAM required to to automatically start one! Use\n - `" + COMMAND_PREFIX + "donate` to donate to the next giveaway.\n - `" + COMMAND_PREFIX + "giveaway` to sponsor your own giveaway\n - `" + COMMAND_PREFIX + "ticketstatus` to see how much you've already donated to the next giveaway"
+GIVEAWAY_STATS_NF="There are {0} entries to win {1:.2f} TANGRAM ending in {2} - sponsored by {3}.\nUse:\n - `" + COMMAND_PREFIX + "ticket` to enter\n - `" + COMMAND_PREFIX + "tipgiveaway` to add to the pot\n - `" + COMMAND_PREFIX + "ticketstatus` to check status of your entry"
+GIVEAWAY_STATS_FEE="There are {0} entries to win {1:.2f} TANGRAM ending in {2} - sponsored by {3}.\nEntry fee: {4} TANGRAM. Use:\n - `" + COMMAND_PREFIX + "ticket {4}` to enter\n - `" + COMMAND_PREFIX + "tipgiveaway` to add to the pot\n - `" + COMMAND_PREFIX + "ticketstatus` to check the status of your entry"
+GIVEAWAY_STATS_INACTIVE="There are no active giveaways\n{0} TANGRAM required to to automatically start one! Use\n - `" + COMMAND_PREFIX + "tipgiveaway` to donate to the next giveaway.\n - `" + COMMAND_PREFIX + "giveaway` to sponsor your own giveaway\n - `" + COMMAND_PREFIX + "ticketstatus` to see how much you've already donated to the next giveaway"
 ENTER_ADDED="You've been successfully entered into the giveaway"
 ENTER_DUP="You've already entered the giveaway"
 TIPGIVEAWAY_NO_ACTIVE="There are no active giveaways. Check giveaway status using `{0}giveawaystats`, or donate to the next one using `{0}tipgiveaway`".format(COMMAND_PREFIX)
@@ -1141,7 +1141,7 @@ async def rain(ctx):
 			actual_amt = await wallet.make_transaction_to_user(user, tip_amount, member.id, member.name, uid)
 		# 2) Add reaction
 		await react_to_message(message, amount)
-		await message.add_reaction('\U0001F4A6') # Sweat Drops
+		await message.add_reaction('\:Tangramwhale:503681928889761802') # Tangramwhale mark
 		# 3) Update tip stats
 		db.update_tip_stats(user, real_amount,rain=True)
 		db.mark_user_active(user)
@@ -2052,10 +2052,45 @@ async def add_x_reaction(message):
 	return
 
 async def react_to_message(message, amount):
-	await message.add_reaction('\:tip:501992623225962506') # TIP mark
-	await message.add_reaction('\:tick:499996370162417664') # check mark
+	if amount > 0:
+		await message.add_reaction('\U00002611') # check mark
+	if amount > 0 and amount < 1000:
+		await message.add_reaction('\U0001F1F8') # S
+		await message.add_reaction('\U0001F1ED') # H
+		await message.add_reaction('\U0001F1F7') # R
+		await message.add_reaction('\U0001F1EE') # I
+		await message.add_reaction('\U0001F1F2') # M
+		await message.add_reaction('\U0001F1F5') # P
+	elif amount >= 1000 and amount < 10000:
+		await message.add_reaction('\U0001F1E8') # C
+		await message.add_reaction('\U0001F1F7') # R
+		await message.add_reaction('\U0001F1E6') # A
+		await message.add_reaction('\U0001F1E7') # B
+	elif amount >= 10000 and amount < 100000:
+		await message.add_reaction('\U0001F1FC') # W
+		await message.add_reaction('\U0001F1E6') # A
+		await message.add_reaction('\U0001F1F1') # L
+		await message.add_reaction('\U0001F1F7') # R
+		await message.add_reaction('\U0001F1FA') # U
+		await message.add_reaction('\U0001F1F8') # S
+	elif amount >= 100000 and amount < 1000000:
+		await message.add_reaction('\U0001F1F8') # S
+		await message.add_reaction('\U0001F1ED') # H
+		await message.add_reaction('\U0001F1E6') # A
+		await message.add_reaction('\U0001F1F7') # R
+		await message.add_reaction('\U0001F1F0') # K
+	elif amount >= 1000000:
+		await message.add_reaction('\U0001F1F2') # M
+		await message.add_reaction('\U0001F1EA') # E
+		await message.add_reaction('\U0001F1EC') # G
+		await message.add_reaction('\U0001F1E6') # A
+		await message.add_reaction('\U0001F1F1') # L
+		await message.add_reaction('\U0001F1E9') # D
+		await message.add_reaction('\U0001F1F4') # O
+		await message.add_reaction('\U0001F1F3') # N
+		await message.add_reaction('\U0001F1F3') # N
+	await message.add_reaction('\:pepelovetangram:503330090659086347') # Tangramwhale mark
 
 
 # Start the bot
 client.run(settings.discord_bot_token)
-
