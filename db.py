@@ -894,8 +894,9 @@ class MutedList(BaseModel):
 	created = DateTimeField(default=datetime.datetime.utcnow())
 
 # Separate table for frozen so we can freeze even users not registered with bot
+#pulowi IntegerField
 class FrozenUser(BaseModel):
-	user_id = IntegerField(unique=True)
+	user_id = BigIntegerField(unique=True)
 	user_name = CharField()
 	created = DateTimeField(default=datetime.datetime.utcnow())
 
