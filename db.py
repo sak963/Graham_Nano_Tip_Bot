@@ -142,7 +142,7 @@ def get_tip_stats(user_id):
 	if not user.stats_ban:
 		tipped_amount = user.tipped_amount
 		tip_count = user.tip_count
-		top_tip = user.top_tip
+		top_tip = float(user.top_tip) / util.RAW_PER_TANGRAM
 	else:
 		tipped_amount = 0
 		tip_count = 0
@@ -157,7 +157,7 @@ def get_tip_stats(user_id):
 # Update tip stats
 @db.connection_context()
 def update_tip_stats(user, tip, rain=False, giveaway=False):
-	tip_add = tip
+	tip_add = tip / util.RAW_PER_TANGRAM
 	(User.update(
 		tipped_amount=(User.tipped_amount + (tip_add)),
 		tip_count = User.tip_count + 1
@@ -353,7 +353,7 @@ def update_giveaway_transactions(giveawayid):
 			(Transaction.giveawayid == -1)
 	)).execute()
 
-	return float(tip_sum)
+	return float(tip_sum)/ util.RAW_PER_TANGRAM
 
 @db.connection_context()
 def add_tip_to_giveaway(amount):
@@ -517,7 +517,7 @@ def get_ticket_status(user_id):
 		contributions = get_tipgiveaway_contributions(user_id)
 		return ("There is no active giveaway.\n" +
 			"So far you've contributed {0} {1} towards the next one.\n" +
-			"I'll automatically enter you into the next giveaway if the fee is <= {0} {1}").format(contributions, "TANGRAM")
+			"I'll automatically enter you into the next giveaway if the fee is <= {0} {1}").format(contributions, "tan")
 
 @db.connection_context()
 def contestant_exists(user_id):
@@ -589,25 +589,25 @@ def get_top_tips():
 
 	for top in top_24h:
 		user24h = top.user_name
-		amount24h = float(top.amount)
+		amount24h = float(top.amount) / util.RAW_PER_TANGRAM
 	for top in top_month:
 		monthuser = top.user_name
-		monthamount = float(top.amount)
+		monthamount = float(top.amount) / util.RAW_PER_TANGRAM
 	for top in top_at:
 		atuser = top.user_name
-		atamount = float(top.amount)
+		atamount = float(top.amount) / util.RAW_PER_TANGRAM
 
 	if user24h is None and monthuser is None and atuser is None:
 		return "```No Tips Found```"
 
 	result = ""
 	if user24h is not None:
-		result += "Biggest tip in the last 24 hours:```{0:.2f} TANGRAM by {1}```".format(amount24h, user24h)
+		result += "Biggest tip in the last 24 hours:```{0:.6f} TANGRAM by {1}```".format(amount24h, user24h)
 
 	if monthuser is not None:
-		result += "Biggest tip in {0}:```{1:.2f} TANGRAM by {2}```".format(month_str, monthamount, monthuser)
+		result += "Biggest tip in {0}:```{1:.6f} TANGRAM by {2}```".format(month_str, monthamount, monthuser)
 	if atuser is not None:
-		result += "Biggest tip of all time:```{0:.2f} TANGRAM by {1}```".format(atamount, atuser)
+		result += "Biggest tip of all time:```{0:.6f} TANGRAM by {1}```".format(atamount, atuser)
 
 	return result
 
