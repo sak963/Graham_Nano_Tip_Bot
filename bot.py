@@ -401,11 +401,10 @@ COMMANDS = {
 ### Response Templates###
 
 # balance
-
-BALANCE_TEXT=(	"```Actual Balance   : {0:,.2f} TANGRAM\n" +
-				"Available Balance: {1:,.2f} TANGRAM\n" +
-				"Pending Send     : {2:,.2f} TANGRAM\n" +
-				"Pending Receipt  : {3:,.2f} TANGRAM```")
+BALANCE_TEXT=(	"```Actual Balance   : {0} tan ({1:.6f} TANGRAM)\n" +
+				"Available Balance: {2} tan ({3:.6f} TANGRAM)\n" +
+				"Pending Send     : {4} tan ({5:.6f} TANGRAM)\n" +
+				"Pending Receipt  : {6} tan ({7:.6f} TANGRAM)```")
 
 # deposit (split into 3 for easy copypasting address on mobile)
 DEPOSIT_TEXT="Your wallet address is:"
@@ -450,18 +449,18 @@ RAIN_NOBODY="I couldn't find anybody eligible to receive rain"
 
 # giveaway (all giveaway related commands)
 GIVEAWAY_EXISTS="There's already an active giveaway"
-GIVEAWAY_STARTED="{0} has sponsored a giveaway of {1:.2f} TANGRAM! Use:\n - `" + COMMAND_PREFIX + "ticket` to enter\n - `" + COMMAND_PREFIX + "tipgiveaway` to increase the pot\n - `" + COMMAND_PREFIX + "ticketstatus` to check the status of your entry"
-GIVEAWAY_STARTED_FEE="{0} has sponsored a giveaway of {1:.2f} TANGRAM, including community contributions the total pot is {2:.2f} TANGRAM! The entry fee is {3} TANGRAM.\nUse:\n - `" + COMMAND_PREFIX + "ticket {3}` to buy your ticket\n - `" + COMMAND_PREFIX + "tipgiveaway` to increase the pot\n - `" + COMMAND_PREFIX + "ticketstatus` to check the status of your entry"
+GIVEAWAY_STARTED="{0} has sponsored a giveaway of {1:.6f} TANGRAM, including community contributions the total pot is {2:.6f} TANGRAM!\nUse:\n - `" + COMMAND_PREFIX + "ticket` to enter\n - `" + COMMAND_PREFIX + "tipgiveaway` to increase the pot\n - `" + COMMAND_PREFIX + "ticketstatus` to check the status of your entry"
+GIVEAWAY_STARTED_FEE="{0} has sponsored a giveaway of {1:.6f} TANGRAM, including community contributions the total pot is {2:.6f} TANGRAM! The entry fee is {3} tan.\nUse:\n - `" + COMMAND_PREFIX + "ticket {3}` to buy your ticket\n - `" + COMMAND_PREFIX + "tipgiveaway` to increase the pot\n - `" + COMMAND_PREFIX + "ticketstatus` to check the status of your entry"
 GIVEAWAY_FEE_TOO_HIGH="A giveaway has started where the entry fee is higher than your donations! Use `{0}ticketstatus` to see how much you need to enter!".format(COMMAND_PREFIX)
 GIVEAWAY_MAX_FEE="Giveaway entry fee cannot be more than 5% of the prize pool"
-GIVEAWAY_ENDED="Congratulations! <@{0}> was the winner of the giveaway! They have been sent {1:.2f} TANGRAM!"
-GIVEAWAY_STATS_NF="There are {0} entries to win {1:.2f} TANGRAM ending in {2} - sponsored by {3}.\nUse:\n - `" + COMMAND_PREFIX + "ticket` to enter\n - `" + COMMAND_PREFIX + "tipgiveaway` to add to the pot\n - `" + COMMAND_PREFIX + "ticketstatus` to check status of your entry"
-GIVEAWAY_STATS_FEE="There are {0} entries to win {1:.2f} TANGRAM ending in {2} - sponsored by {3}.\nEntry fee: {4} TANGRAM. Use:\n - `" + COMMAND_PREFIX + "ticket {4}` to enter\n - `" + COMMAND_PREFIX + "tipgiveaway` to add to the pot\n - `" + COMMAND_PREFIX + "ticketstatus` to check the status of your entry"
-GIVEAWAY_STATS_INACTIVE="There are no active giveaways\n{0} TANGRAM required to to automatically start one! Use\n - `" + COMMAND_PREFIX + "tipgiveaway` to donate to the next giveaway.\n - `" + COMMAND_PREFIX + "giveaway` to sponsor your own giveaway\n - `" + COMMAND_PREFIX + "ticketstatus` to see how much you've already donated to the next giveaway"
+GIVEAWAY_ENDED="Congratulations! <@{0}> was the winner of the giveaway! They have been sent {1:.6f} TANGRAM!"
+GIVEAWAY_STATS_NF="There are {0} entries to win {1:.6f} TANGRAM ending in {2} - sponsored by {3}.\nUse:\n - `" + COMMAND_PREFIX + "ticket` to enter\n - `" + COMMAND_PREFIX + "tipgiveaway` to add to the pot\n - `" + COMMAND_PREFIX + "ticketstatus` to check status of your entry"
+GIVEAWAY_STATS_FEE="There are {0} entries to win {1:.6f} TANGRAM ending in {2} - sponsored by {3}.\nEntry fee: {4} tan. Use:\n - `" + COMMAND_PREFIX + "ticket {4}` to enter\n - `" + COMMAND_PREFIX + "tipgiveaway` to add to the pot\n - `" + COMMAND_PREFIX + "ticketstatus` to check the status of your entry"
+GIVEAWAY_STATS_INACTIVE="There are no active giveaways\n{0} tan required to to automatically start one! Use\n - `" + COMMAND_PREFIX + "tipgiveaway` to donate to the next giveaway.\n - `" + COMMAND_PREFIX + "givearai` to sponsor your own giveaway\n - `" + COMMAND_PREFIX + "ticketstatus` to see how much you've already donated to the next giveaway"
 ENTER_ADDED="You've been successfully entered into the giveaway"
 ENTER_DUP="You've already entered the giveaway"
 TIPGIVEAWAY_NO_ACTIVE="There are no active giveaways. Check giveaway status using `{0}giveawaystats`, or donate to the next one using `{0}tipgiveaway`".format(COMMAND_PREFIX)
-TIPGIVEAWAY_ENTERED_FUTURE="With your bantastic donation I have reserved your ticket for the next community sponsored giveaway!"
+TIPGIVEAWAY_ENTERED_FUTURE="With your gorgeous donation I have reserved your ticket for the next community sponsored giveaway!"
 
 # toptips
 TOPTIP_SPAM="No more top tips for {0} seconds"
@@ -517,12 +516,12 @@ def create_spam_dicts():
 			last_blocks[c.id] = initial_ts
 ### Redis stuff
 
-async def pocket_pending_tx():
-	accts = db.get_accounts()
-	logger.debug("Firing pocket_task")
-	pocket_task.delay(accts)
-	await asyncio.sleep(120)
-	asyncio.get_event_loop().create_task(pocket_pending_tx())
+#async def pocket_pending_tx():
+#	accts = db.get_accounts()
+#	logger.debug("Firing pocket_task")
+#	pocket_task.delay(accts)
+#	await asyncio.sleep(120)
+#	asyncio.get_event_loop().create_task(pocket_pending_tx())
 
 r = redis.StrictRedis()
 MAX_TX_RETRIES=3
@@ -744,7 +743,20 @@ async def balance(ctx):
 		available = balances['available']
 		send = balances['pending_send']
 		receive = balances['pending']
-		await post_response(message, BALANCE_TEXT, actual, available, send, receive)
+		# NANO-version uses micro units so we show the NANO-equivalent for convenience
+		receivenano = receive / util.RAW_PER_TANGRAM
+		actualnano = actual / util.RAW_PER_TANGRAM
+		availablenano = available / util.RAW_PER_TANGRAM
+		sendnano = send / util.RAW_PER_TANGRAM
+		receivenano = receive / util.RAW_PER_TANGRAM
+		await post_response(message, BALANCE_TEXT,	"{:,}".format(actual),
+							actualnano,
+							"{:,}".format(available),
+							availablenano,
+							"{:,}".format(send),
+							sendnano,
+							"{:,}".format(receive),
+							receivenano)
 
 
 @client.command(aliases=get_aliases(DEPOSIT, exclude='deposit'))
@@ -887,7 +899,7 @@ async def do_tip(message, rand=False):
 	try:
 		user = db.get_user_by_id(message.author.id, user_name=message.author.name)
 		if user is None:
-			return
+			return await post_response(message, STATS_ACCT_NOT_FOUND_TEXT)
 		amount = find_amount(message.content)
 		if rand and amount < settings.tiprandom_minimum:
 			raise util.TipBotException("usage_error")
@@ -1247,8 +1259,8 @@ async def givearai(ctx):
 			await post_dm(message.author, INSUFFICIENT_FUNDS_TEXT)
 			return
 		end_time = datetime.datetime.utcnow() + datetime.timedelta(minutes=duration)
-		nano_amt = amount
-		tipped_amount = db.get_tipgiveaway_sum()
+		nano_amt =  amount / util.RAW_PER_TANGRAM
+		tipped_amount = db.get_tipgiveaway_sum() / util.RAW_PER_TANGRAM
 		giveaway,deleted = db.start_giveaway(message.author.id, message.author.name, nano_amt, end_time, message.channel.id, entry_fee=fee)
 		uid = str(uuid.uuid4())
 		await wallet.make_transaction_to_address(user, amount, None, uid, giveaway_id=giveaway.id)
@@ -1289,14 +1301,14 @@ async def tip_giveaway(message, ticket=False):
 		amount = find_amount(message.content)
 		user = db.get_user_by_id(message.author.id, user_name=message.author.name)
 		if user is None:
-			return
+			return await post_response(message, STATS_ACCT_NOT_FOUND_TEXT)
 		balance = await wallet.get_balance(user)
 		user_balance = balance['available']
 		if user_balance < amount:
 			await add_x_reaction(message)
 			await post_dm(message.author, INSUFFICIENT_FUNDS_TEXT)
 			return
-		nano_amt = amount
+		nano_amt = amount / util.RAW_PER_TANGRAM
 		if giveaway is not None:
 			giveawayid = giveaway.id
 			fee = giveaway.entry_fee
@@ -1338,7 +1350,7 @@ async def tip_giveaway(message, ticket=False):
 		# If tip sum is >= GIVEAWAY MINIMUM then start giveaway
 		if giveaway is None:
 			tipgiveaway_sum = db.get_tipgiveaway_sum()
-			nano_amt = tipgiveaway_sum
+			nano_amt = float(tipgiveaway_sum)/ util.RAW_PER_TANGRAM
 			if tipgiveaway_sum >= GIVEAWAY_MINIMUM:
 				end_time = datetime.datetime.utcnow() + datetime.timedelta(minutes=GIVEAWAY_AUTO_DURATION)
 				db.start_giveaway(client.user.id, client.user.name, 0, end_time, message.channel.id,entry_fee=fee)
@@ -1358,7 +1370,8 @@ async def tip_giveaway(message, ticket=False):
 async def ticketstatus(ctx):
 	message = ctx.message
 	if GIVEAWAY_CHANNELS and message.channel.id not in GIVEAWAY_CHANNELS:
-		return
+		if not is_private(message.channel):
+			return
 	user = db.get_user_by_id(message.author.id)
 	if user is not None:
 		await post_dm(message.author, db.get_ticket_status(message.author.id))
@@ -1373,7 +1386,8 @@ async def giveawaystats(ctx):
 	if message.channel.id in settings.no_spam_channels:
 		return
 	elif GIVEAWAY_CHANNELS and message.channel.id not in GIVEAWAY_CHANNELS:
-		return
+		if not is_private(message.channel):
+			return
 	if not is_private(message.channel):
 		delete_message = True
 		if message.channel.id not in last_gs:
@@ -1466,7 +1480,7 @@ async def winners(ctx):
 			padding = " " * ((max_l - len(winner_nm)) + 1)
 			response += winner_nm
 			response += padding
-			response += 'won {0:.2f} TANGRAM'.format(winner['amount'])
+			response += 'won {0:.6f} TANGRAM'.format(winner['amount'])
 			response += '\n'
 		response += "```"
 		await post_response(message, response)
@@ -1509,7 +1523,7 @@ async def leaderboard(ctx):
 			padding = " " * ((max_l - len(top_user_nm)) + 1)
 			response += top_user_nm
 			response += padding
-			response += '- {0:.2f} TANGRAM'.format(top_user['amount'])
+			response += '- {0:.6f} TANGRAM'.format(top_user['amount'])
 			response += '\n'
 		response += "```"
 		await post_response(message, response)
@@ -1983,7 +1997,7 @@ def return_address_match(input_text):
 		raise util.TipBotException("address_not_found")
 
 def remove_address(input_text):
-	address_regex = '(?:xrb|nano|ban)(?:_)(?:1|3)(?:[13456789abcdefghijkmnopqrstuwxyz]{59})'
+	address_regex = '(?:tgm)(?:_)(?:vJm)(?:[123456789abcdefghijkmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ]{99})'
 	return re.sub(address_regex, '', input_text)
 
 # find amount in outbound sends
@@ -2089,8 +2103,9 @@ async def react_to_message(message, amount):
 		await message.add_reaction('\U0001F1F4') # O
 		await message.add_reaction('\U0001F1F3') # N
 		await message.add_reaction('\U0001F1F3') # N
-	await message.add_reaction('\:pepelovetangram:503330090659086347') # Tangramwhale mark
+	await message.add_reaction('\:tangram:506656996053745664') # Tangramwhale mark
 
 
 # Start the bot
 client.run(settings.discord_bot_token)
+
