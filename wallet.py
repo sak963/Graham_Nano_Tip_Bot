@@ -50,7 +50,7 @@ async def create_or_fetch_user(user_id, user_name):
 		wallet_output = json.loads(outputText)
 		address = wallet_output['address']
 		#pulowi claim
-		wallet_command = {'identifier': wallet, 'password':  settings.node_pass,'address':  address,'amount':  100}
+		wallet_command = {'identifier': wallet, 'password':  settings.node_pass,'address':  address,'amount':  1}
 		action = "actor/wallet/reward"
 		outputText = await communicate_wallet_async(wallet_command,action)
 		wallet_output = json.loads(outputText)
@@ -87,7 +87,7 @@ async def get_balance(user):
 		if 'balance' not in wallet_output:
 			# Ops
 			return None
-		actual_balance = int(Decimal(wallet_output['balance']))
+		actual_balance = int(Decimal(wallet_output['balance']) * util.RAW_PER_TANGRAM)
 		#pulowi pendinte
 		#pending_balance = int(wallet_output['pending'])
 		pending_balance = 0
