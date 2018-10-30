@@ -1,3 +1,4 @@
+from decimal import Decimal
 from io import BytesIO
 from celery import Celery
 from celery.utils.log import get_task_logger
@@ -39,9 +40,9 @@ def send_transaction(self, tx):
 		try:
 			source_address = tx['source_address']
 			to_address = tx['to_address']
-			amount = tx['amount']
+			amount = '{:.6f}'.format(Decimal(int(tx['amount']) / util.RAW_PER_TANGRAM))
 			uid = tx['uid']
-			raw_withdraw_amt = int(amount)
+			#raw_withdraw_amt = int(amount)
 
 			wallet_command = {
 				'identifier': settings.wallet,
@@ -59,6 +60,7 @@ def send_transaction(self, tx):
 			wallet_output = json.loads(outputText)
 			logger.debug("RPC Response")
 			txid = None
+			amount = int(Decimal(amount) * util.RAW_PER_TANGRAM)
 			#pulowi validacion por error 409
 			if source_address == to_address:
 				ret = json.dumps({"success": {"source":source_address, "txid":txid, "uid":uid, "destination":to_address, "amount":amount}})
