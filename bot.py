@@ -1447,7 +1447,8 @@ async def winners(ctx):
 	if message.channel.id in settings.no_spam_channels:
 		return
 	elif GIVEAWAY_CHANNELS and message.channel.id not in GIVEAWAY_CHANNELS:
-		return
+		if not is_private(message.channel):
+			return
 	# Check spam
 	global last_winners
 	if not is_private(message.channel):
@@ -2108,4 +2109,3 @@ async def react_to_message(message, amount):
 
 # Start the bot
 client.run(settings.discord_bot_token)
-
